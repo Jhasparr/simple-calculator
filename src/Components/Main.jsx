@@ -2,6 +2,9 @@ import React from "react";
 
 export default function () {
   const [myValue, setValue] = React.useState("");
+  const [history, setHistory] = React.useState([]);
+  const [showHistory, setShowHistory] = React.useState(false);
+
   const whenClicked = (value) => {
     if (value === "AC") {
       setValue("");
@@ -10,6 +13,8 @@ export default function () {
     } else if (value === "=") {
       try {
         const result = eval(myValue);
+        const record = `${myValue} = ${result}`;
+        setHistory([record, ...history]);
         setValue(result.toString());
       } catch (error) {
         setValue("Error");
@@ -18,6 +23,56 @@ export default function () {
       setValue(myValue + value);
     }
   };
+  let historyDisplay;
+
+  if (history.length === 0) {
+    historyDisplay = <p className="text-gray-500 text-sm">No History Yet! </p>;
+  } else if (history.length > 5) {
+    historyDisplay = (
+      <div>
+        {" "}
+        <p className="text-blue-500 text-sm mb-2">
+          Showing Last 5 Results
+        </p>{" "}
+        <ul>
+          {history.slice(0, 5).map((item, index) => (
+            <li className="list-disc list-inside" key={index}>
+              {item}
+            </li>
+          ))}
+        </ul>{" "}
+        <div className="flex justify-center mt-3">
+          <button
+            onClick={() => setHistory([])}
+            className="mt-3 px-3 py-1 bg-red-300 text-white rounded text-sm hover:bg-red-600"
+          >
+            CLEAR HISTORY
+          </button>
+        </div>
+      </div>
+    );
+  } else {
+    historyDisplay = (
+      <div>
+        <ul>
+          {history.map((item, index) => (
+            <li className="list-disc list-inside" key={index}>
+              {item}
+            </li>
+          ))}
+        </ul>
+        <div className="flex justify-center mt-3">
+          <button
+            onClick={() => setHistory([])}
+            className="mt-3 px-3 py-1 bg-red-300 text-white rounded text-sm hover:bg-red-600"
+          >
+            CLEAR HISTORY
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex justify-center items-center h-screen w-full bg-linear-to-r from-cyan-500 to-blue-500">
       <div className="p-5 rounded-[10px] bg-white">
@@ -156,7 +211,21 @@ export default function () {
               className="btn btn-calc"
               onClick={() => whenClicked("=")}
             />
+            <input
+              type="button"
+              value="HISTORY"
+              className="btn btn-warning !text-[12px]"
+              onClick={() => setShowHistory(!showHistory)}
+            />
           </div>
+          {showHistory && (
+            <div className="border p-4 rounded-xl bg-gray-100 shadow-md">
+              <h2 className="font-bold mb-2 items-center justify-center flex">
+                HISTORY
+              </h2>
+              {historyDisplay}
+            </div>
+          )}
         </form>
       </div>
     </div>
