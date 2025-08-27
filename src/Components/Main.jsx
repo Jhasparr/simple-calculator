@@ -13,8 +13,7 @@ export default function () {
     } else if (value === "=") {
       try {
         const result = eval(myValue);
-        const record = `${myValue} = ${result}`;
-        setHistory([record, ...history]);
+        setHistory([{expr: myValue, result: result.toString()}, ...history]);
         setValue(result.toString());
       } catch (error) {
         setValue("Error");
@@ -23,6 +22,11 @@ export default function () {
       setValue(myValue + value);
     }
   };
+  
+   const reuseHistory = (item) => {
+    const result = eval(item.expr);
+    setValue(result.toString());
+   }
   let historyDisplay;
 
   if (history.length === 0) {
@@ -56,8 +60,8 @@ export default function () {
       <div>
         <ul>
           {history.map((item, index) => (
-            <li className="list-disc list-inside" key={index}>
-              {item}
+            <li className="list-disc ccursor-pointer p-2 rounded hover:bg-blue-100 transitionlist-inside" key={index} onClick={() => reuseHistory(item)}>
+              {item.expr} = {item.result}
             </li>
           ))}
         </ul>
@@ -72,6 +76,8 @@ export default function () {
       </div>
     );
   }
+  
+    
 
   return (
     <div className="flex justify-center items-center h-screen w-full bg-linear-to-r from-cyan-500 to-blue-500">
